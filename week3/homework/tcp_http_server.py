@@ -20,7 +20,7 @@ status_code_map = {
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.bind((HOST, PORT))
-    s.listen(1)
+    s.listen(10)
     print('Start server')
     while True:
         try:
@@ -33,7 +33,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 left = data[ptr:]
                 request = header.decode('utf-8')
                 method, path, protocol = request.split(' ')
-                extension = path.split('.')[1] # 파일 확장자
+                if (len(path.split('.')) >= 2):
+                    extension = path.split('.')[1] # 파일 확장자
+                else:
+                    extension = 'html'
                 status_code = '200' # 상태코드
                 print(f'Received: {method} {path} {protocol} {extension}')
                 if not data:
@@ -44,7 +47,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 if not os.path.exists(path):
                     path = './notfound.html'
                     extension = 'html'
-                    status_code = '400'
+                    status_code = '404'
                 with open(path, 'rb') as f:
                     body = f.read()
                     # if(extension is not ('jpeg' or 'jpg' or 'png')):
